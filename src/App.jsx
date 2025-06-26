@@ -1,29 +1,24 @@
+import React from 'react';
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
+import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
+import '@solana/wallet-adapter-react-ui/styles.css';
 
-import { useEffect, useState } from "react";
-import { Connection, PublicKey } from "@solana/web3.js";
-
-const connection = new Connection("https://api.devnet.solana.com");
-
-function App() {
-  const [balance, setBalance] = useState(null);
-  const wallet = "INSERT_YOUR_PUBLIC_KEY_HERE";
-
-  useEffect(() => {
-    const fetchBalance = async () => {
-      const pubKey = new PublicKey(wallet);
-      const lamports = await connection.getBalance(pubKey);
-      setBalance(lamports / 1e9);
-    };
-    fetchBalance();
-  }, []);
+const App = () => {
+  const wallets = [new PhantomWalletAdapter()];
 
   return (
-    <div style={{ padding: 20, fontFamily: "sans-serif" }}>
-      <h1>RFT Coin Dashboard</h1>
-      <p><strong>Wallet:</strong> {wallet}</p>
-      <p><strong>SOL Balance:</strong> {balance ?? "Loading..."} SOL</p>
-    </div>
+    <ConnectionProvider endpoint="https://api.mainnet-beta.solana.com">
+      <WalletProvider wallets={wallets} autoConnect>
+        <WalletModalProvider>
+          <div style={{ padding: '2rem' }}>
+            <h1>RFT Coin Dashboard</h1>
+            <WalletMultiButton />
+          </div>
+        </WalletModalProvider>
+      </WalletProvider>
+    </ConnectionProvider>
   );
-}
+};
 
 export default App;
